@@ -38,6 +38,11 @@
     }
 }
 
+.key-press {
+    box-shadow: 0px 0px 0px;
+    transform: translateY(3px);
+}
+
 .display {
     font-family: $display-font;
     text-align: right;

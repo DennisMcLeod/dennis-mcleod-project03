@@ -10,6 +10,14 @@
 $display-font: 'digital-7', 'Ubuntu', sans-serif;
 $body-font: 'Ubuntu', sans-serif;
 
+// MEDIA QUERIES
+$tabletWideWidth: 900px;
+@mixin tablet-wide {
+    @media (max-width: #{$tabletWideWidth}) {
+        @content;
+    }
+}
+
 // DEFAULT STYLES
 html {
     font-size: 62.5%;
