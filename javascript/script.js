@@ -1,6 +1,13 @@
+// TODO FIGURE OUT HOW TO ONLY UPDATE OPERAND ONCE THE NUMBER IS CHOSEN
+
+
 calcApp = {}
 
 calcApp.registry = "";
+
+calcApp.operand = "";
+
+calcApp.currentOperator = "";
 
 calcApp.displayString = "";
 
@@ -15,6 +22,39 @@ calcApp.displayToString = function() {
         calcApp.displayString += value.textContent;
     });
 }
+
+// DEFINE ALL OF THE CALCULATOR OPERANDS
+calcApp.operators = {
+    "+" : function () {
+        calcApp.registry = calcApp.registry + calcApp.operand;
+        calcApp.displayAnswer();   
+    },
+    "-" : function () {
+        calcApp.registry = calcApp.registry - calcApp.operand;
+        calcApp.displayAnswer();
+    },
+    "/" : function() {
+        if (calcApp.operand === 0 || calcApp.operand === "") {
+            $('.placeholder').remove();
+            $('.display').append(`<span>DIV BY 0</span>`);
+        } else {
+            calcApp.registry = calcApp.registry / calcApp.operand;
+            calcApp.displayAnswer();
+        }
+
+    },
+    "x" : function() {
+        calcApp.registry = calcApp.registry * calcApp.operand;
+        calcApp.displayAnswer();
+    },
+
+};
+
+calcApp.displayAnswer = function() {
+    $('.display').empty();
+    $('.display').append(`<span>${calcApp.registry}</span>`);
+};
+
 
 calcApp.updateDisplay = function(e) {
     // End the function if there are 10 digits or a second decimal is entered.
@@ -34,10 +74,10 @@ calcApp.clearDisplay = function() {
     
 }
 
-calcApp.updateRegistry = function() {
+calcApp.updateOperand = function(operand) {
     calcApp.displayToString();
     // convert the ouputted string to a number
-    calcApp.registry = parseFloat(calcApp.displayString);
+    calcApp[operand] = parseFloat(calcApp.displayString);
 
 }
 
@@ -45,30 +85,50 @@ calcApp.keyPress = function() {
     $(document).on('keydown', function(e) {
         
         const $key = $(`.key[data-key="${e.keyCode}"]`);
+
         // If shift and the equals button is pressed simultaneously activate the plus key
         if (e.shiftKey === true && e.keyCode === 61) {
             // Add keypress styles to the plus key
             $('.key15').addClass('key-press');
+            calcApp.updateOperand('registry');
+            calcApp.clearDisplay();
+    
         // If shift and any other key is pressed end the function
         } else if (e.shiftKey === true && e.keyCode !== 61) {
             return;
+
         // If the keypress is a number between 0-9 do the following
         } else if (e.keyCode >= 48 && e.keyCode <= 57 || e.keyCode === 190) {
             // Add key-press styles to the key which was pressed
             $key.addClass('key-press');
             calcApp.updateDisplay(e);
+
         // If escape or "c" is pressed clear the display and registry
         } else if (e.keyCode === 27 || e.keyCode === 67){
             $('.clear').addClass('key-press');
             calcApp.clearDisplay();
-        }
-        
-        // If the keypress is one of the operators (equals, plus, minus, etc.) do the following
-        else {
-            if ($key.length === 0) return;
+            calcApp.updateOperand('registry');
+            calc
+
+        // If equals is pressed
+        }else if (e.keyCode === 61) {
             $key.addClass('key-press');
-            calcApp.updateRegistry();
+            calcApp.updateOperand('operand');     
+            calcApp.operators[calcApp.currentOperator]();
+            
+        }
+        // If the keypress is one of the operators (plus, minus, etc.) do the following
+        else {
+            // If there is no div with a data-key that corresponds to the key pressed end the function
+            if ($key.length === 0) return;
+            
+            $key.addClass('key-press');
+            calcApp.updateOperand('registry');
             calcApp.clearDisplay();
+            
+            calcApp.currentOperator = e.key;
+            
+
         }
     });
 }

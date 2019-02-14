@@ -1,13 +1,12 @@
 
-// TYPEFACE
 @font-face {
-  font-family: 'digital-7';
-  src: url('../assets/fonts/digital-7-webfont.woff') format('woff'), /* Modern Browsers */
-       url('../assets/fonts/digital-7-webfont.ttf')  format('truetype'); /* Safari, Android, iOS */
+  font-family: 'digital-7-mono';
+  src: url('../assets/fonts/dig-7-mono/digital-7-mono-webfont.woff') format('woff'), /* Modern Browsers */
+       url('../assets/fonts/dig-7-mono/digital-7-mono.ttf') format('truetype'); /* Safari, Android, iOS */
 }
 
 // VARIABLES
-$display-font: 'digital-7', 'Ubuntu', sans-serif;
+$display-font: 'digital-7-mono', 'Ubuntu', sans-serif;
 $body-font: 'Ubuntu', sans-serif;
 
 // MEDIA QUERIES
