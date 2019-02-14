@@ -204,8 +204,8 @@ main {
   font-family: "Ubuntu", sans-serif;
   display: -ms-grid;
   display: grid;
-  -ms-grid-rows: (1fr)[4];
-  grid-template-rows: repeat(4, 1fr);
+  -ms-grid-rows: (1fr)[5];
+  grid-template-rows: repeat(5, 1fr);
   -ms-grid-columns: (1fr)[4];
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 1.5rem; }
@@ -230,18 +230,31 @@ main {
   align-items: center;
   -webkit-box-shadow: 0px 3px 0px #878787;
   box-shadow: 0px 3px 0px #878787;
-  -webkit-transition: all 50ms ease-in-out;
-  -o-transition: all 50ms ease-in-out;
-  transition: all 50ms ease-in-out;
+  -webkit-transition: all 30ms ease-in-out;
+  -o-transition: all 30ms ease-in-out;
+  transition: all 30ms ease-in-out;
   cursor: pointer; }
-  .key:last-of-type {
-    background: #f8b352; }
   .key:active {
     -webkit-box-shadow: 0px 0px 0px;
     box-shadow: 0px 0px 0px;
     -webkit-transform: translateY(3px);
     -ms-transform: translateY(3px);
     transform: translateY(3px); }
+
+.key16 {
+  -ms-grid-row: 4;
+  -ms-grid-row-span: 2;
+  grid-row: 4 / 6;
+  -ms-grid-column: 4;
+  -ms-grid-column-span: 1;
+  grid-column: 4 / 5;
+  height: 11.5rem; }
+
+.equal {
+  background: #f8b352; }
+
+.clear {
+  background: #e05b5b; }
 
 .key-press {
   -webkit-box-shadow: 0px 0px 0px;
@@ -255,7 +268,7 @@ main {
   text-align: right;
   font-size: 5.0rem;
   padding: 0.5rem 1.0rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
   background: #cfe0cd;
   border-radius: 20px;
   border: 4px inset #788678; }
