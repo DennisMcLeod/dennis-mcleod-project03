@@ -5,26 +5,27 @@ calcApp.registry = "";
 calcApp.displayString = "";
 
 calcApp.displayToString = function() {
+    // Create JQUERY object with all of the spans inside the DIV with a class of display
     const displayData = ($('.display > span'))
+    // Clear the previous displayString
     calcApp.displayString = "";
 
+    // Create a string out of the value of each span contained within the displayData object
     displayData.each(function (index, value) {
         calcApp.displayString += value.textContent;
     });
 }
 
 calcApp.updateDisplay = function(e) {
-    // remove placeholder 0
+    // End the function if there are 10 digits or a second decimal is entered.
     const displayContents = $('.display > span');
     if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && e.originalEvent.keyCode === 190)) return;
+    // remove placeholder 0
     $('.placeholder').remove();
-    // End the function if there are 10 digits or a second decimal is entered.
-    // if (calcApp.displayString.match(/\./).length > 0 && e.originalEvent.key === 190) return;
-    // Insert a new span for each keypress with the value pressed
+    // Insert a new span for each keypress with a value equal to the key which is pressed
     $('.display').append(`<span>${e.originalEvent.key}</span>`)
 
     calcApp.displayToString();
-    // console.log(e.originalEvent.keyCode);
 }
 
 calcApp.clearDisplay = function() {
@@ -34,8 +35,6 @@ calcApp.clearDisplay = function() {
 }
 
 calcApp.updateRegistry = function() {
-    // clear the registry
-    
     calcApp.displayToString();
     // convert the ouputted string to a number
     calcApp.registry = parseFloat(calcApp.displayString);
@@ -64,7 +63,7 @@ calcApp.keyPress = function() {
             calcApp.clearDisplay();
         }
         
-        // Lastly if the keypress is one of the operators (equals, plus, minus, etc.) do the following
+        // If the keypress is one of the operators (equals, plus, minus, etc.) do the following
         else {
             if ($key.length === 0) return;
             $key.addClass('key-press');
@@ -75,8 +74,7 @@ calcApp.keyPress = function() {
 }
 
 calcApp.removeTransition = function() {
-    // Remove key-press class when the transition ends
-    
+    // Add an event listener to every key that waits until the "transform" transition ends and removes the "key-press" class
     const $keys = $('.key');
     $keys.on('transitionend', function(e) {
         if (e.originalEvent.propertyName !== 'transform') return;
