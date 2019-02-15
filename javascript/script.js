@@ -25,17 +25,20 @@ calcApp.displayToString = function() {
 
 // DEFINE ALL OF THE CALCULATOR OPERANDS
 calcApp.operators = {
+    // Addition
     "+" : function () {
         calcApp.registry = calcApp.registry + calcApp.operand;
         calcApp.displayAnswer();   
     },
+    // Subtraction
     "-" : function () {
         calcApp.registry = calcApp.registry - calcApp.operand;
         calcApp.displayAnswer();
     },
+    // Division
     "/" : function() {
         if (calcApp.operand === 0 || calcApp.operand === "") {
-            $('.placeholder').remove();
+            $('.display').empty();
             $('.display').append(`<span>DIV BY 0</span>`);
         } else {
             calcApp.registry = calcApp.registry / calcApp.operand;
@@ -43,6 +46,7 @@ calcApp.operators = {
         }
 
     },
+    // Multiplication
     "x" : function() {
         calcApp.registry = calcApp.registry * calcApp.operand;
         calcApp.displayAnswer();
@@ -51,6 +55,14 @@ calcApp.operators = {
 };
 
 calcApp.displayAnswer = function() {
+
+    // If the value is more than 10 digits or has more than 7 decimals use scientific notation
+    const decimals = calcApp.countDecimals();
+
+    if (calcApp.registry > 9999999999 || decimals >= 7) {
+        calcApp.registry = calcApp.registry.toExponential(4);
+    }
+
     $('.display').empty();
     $('.display').append(`<span>${calcApp.registry}</span>`);
 };
@@ -81,6 +93,24 @@ calcApp.updateOperand = function(operand) {
 
 }
 
+
+// FUNCTION FROM https://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number, comments are my own
+calcApp.countDecimals = function() { 
+    // Regular expression to match either the decimals after the . or number after the E (this took forever to understand)
+    const match = ('' + calcApp.registry).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+    if (!match) { return 0; }
+    // Return the higher of 0 (if there are no numbers after the decimal) or the equation below. 
+    // Match[1].length will be the length of the matched REGEX string which will be equal to the amount of digits after the decimal.    
+    // Match[2] will match if the number is in scientific notation and will contain both the operator (+ or - depending on if the decimals are before or after the decimal) and the number of decimals.
+    // We subtract match[1].length from match[2] because a positive number in scientific notation will decrease the number of decimals while a negative number will increase them.
+    return Math.max(
+        0,
+        // Number of digits right of decimal point.
+        (match[1] ? match[1].length : 0)
+        // Adjust for scientific notation.
+        - (match[2] ? +match[2] : 0));
+}
+
 calcApp.keyPress = function() {
     $(document).on('keydown', function(e) {
         
@@ -92,6 +122,8 @@ calcApp.keyPress = function() {
             $('.key15').addClass('key-press');
             calcApp.updateOperand('registry');
             calcApp.clearDisplay();
+            calcApp.operand = "";
+            calcApp.currentOperator = '+';
     
         // If shift and any other key is pressed end the function
         } else if (e.shiftKey === true && e.keyCode !== 61) {
@@ -108,12 +140,16 @@ calcApp.keyPress = function() {
             $('.clear').addClass('key-press');
             calcApp.clearDisplay();
             calcApp.updateOperand('registry');
-            calc
+            
 
         // If equals is pressed
         }else if (e.keyCode === 61) {
             $key.addClass('key-press');
-            calcApp.updateOperand('operand');     
+            if (calcApp.operand === "") calcApp.updateOperand('operand');
+
+             
+            
+            // call the operator function that corresponds to the current operator
             calcApp.operators[calcApp.currentOperator]();
             
         }
@@ -125,7 +161,11 @@ calcApp.keyPress = function() {
             $key.addClass('key-press');
             calcApp.updateOperand('registry');
             calcApp.clearDisplay();
+
+            calcApp.operand = "";
             
+            // Store the current operator to whichever key was pressed so that it can be used when the equals key is pressed
+
             calcApp.currentOperator = e.key;
             
 
