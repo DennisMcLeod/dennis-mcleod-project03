@@ -64,4 +64,13 @@
     background: #cfe0cd;
     border-radius: 20px;
     border: 4px inset #788678;
+    position: relative;
+}
+
+.operand {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 1.0rem;   
+    font-size: 3.0rem; 
 }

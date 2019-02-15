@@ -68,8 +68,10 @@ calcApp.displayAnswer = function() {
 
     // If the value is more than 10 digits or has more than 7 decimals use scientific notation
     const decimals = calcApp.countDecimals();
-
-    if (calcApp.registry > 9999999999 || decimals >= 7) {
+    const regLength = calcApp.registry.toString().length;
+    if (regLength > 9 && calcApp.registry >= 1) {
+        calcApp.registry = calcApp.registry.toPrecision(10);
+    } else if (calcApp.registry > 9999999999 || decimals >= 7) {
         calcApp.registry = calcApp.registry.toExponential(4);
     }
 
@@ -98,7 +100,7 @@ calcApp.updateDisplay = function(arg) {
 
 calcApp.clearDisplay = function() {
     // Empty the display and replace the placeholder 0
-    $('.display').empty().append(`<span class="placeholder">0</span>`);
+    $('.display').empty().append(`<span class="placeholder">0</span>`).append(`<span class="operand"></span>`);
     
 }
 
@@ -116,7 +118,7 @@ calcApp.countDecimals = function() {
     const match = ('' + calcApp.registry).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
     if (!match) { return 0; }
     // Return the higher of 0 (if there are no numbers after the decimal) or the equation below. 
-    // Match[1].length will be the length of the matched REGEX string which will be equal to the amount of digits after the decimal.    
+    // Match[1].length will be the number of characters in the matched REGEX string, which will be equal to the amount of digits after the decimal.    
     // Match[2] will match if the number is in scientific notation and will contain both the operator (+ or - depending on if the decimals are before or after the decimal) and the number of decimals.
     // We subtract match[1].length from match[2] because a positive number in scientific notation will decrease the number of decimals while a negative number will increase them.
     return Math.max(
@@ -127,6 +129,7 @@ calcApp.countDecimals = function() {
         - (match[2] ? +match[2] : 0));
 }
 
+// EVENT LISTENER FOR CALCULATOR FUNCTION KEYPRESS
 calcApp.keyPress = function() {
     $(document).on('keydown', function(e) {
         
@@ -142,6 +145,7 @@ calcApp.keyPress = function() {
             calcApp.clearDisplay();
             calcApp.operand = "";
             calcApp.currentOperator = '+';
+            
     
         // If shift and any other key is pressed end the function
         } else if (e.shiftKey === true && e.keyCode !== 61) {
@@ -180,13 +184,15 @@ calcApp.keyPress = function() {
             calcApp.operand = "";
             // Store the current operator to whichever key was pressed so that it can be used when the equals key is pressed
             calcApp.currentOperator = e.key;
+
+    
             
 
         }
     });
 }
 
-
+// EVENT LISTENER FOR CALCULATOR FUNCTION ON CLICK
 calcApp.keyClick = function () {
     $('.key').on('click', function(e) {
         
@@ -227,8 +233,8 @@ calcApp.keyClick = function () {
 }
 
 
+// Add an event listener to every key that waits until the "transform" transition ends and removes the "key-press" class
 calcApp.removeTransition = function() {
-    // Add an event listener to every key that waits until the "transform" transition ends and removes the "key-press" class
     const $keys = $('.key');
     $keys.on('transitionend', function(e) {
         if (e.originalEvent.propertyName !== 'transform') return;
