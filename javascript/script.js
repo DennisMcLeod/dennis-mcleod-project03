@@ -3,12 +3,16 @@
 
 calcApp = {}
 
+// This property will store the calculator registry, on which the operand will be applied to (ie. the first number the user enters, before the chosen operator)
 calcApp.registry = "";
 
+// This property will store the operand, which will be applied to the registry based on the chosen operator (eg. if the user selected addition this property will be added to the registry)
 calcApp.operand = "";
 
+// This property will store the operator the user has chosen
 calcApp.currentOperator = "";
 
+// This property will store a string of what is in the current display
 calcApp.displayString = "";
 
 calcApp.displayToString = function() {
@@ -54,6 +58,12 @@ calcApp.operators = {
 
 };
 
+calcApp.clear = function() {
+    // Clear the display and the registry
+    calcApp.clearDisplay();
+    calcApp.updateOperand('registry');
+}
+
 calcApp.displayAnswer = function() {
 
     // If the value is more than 10 digits or has more than 7 decimals use scientific notation
@@ -68,15 +78,21 @@ calcApp.displayAnswer = function() {
 };
 
 
-calcApp.updateDisplay = function(e) {
-    // End the function if there are 10 digits or a second decimal is entered.
+calcApp.updateDisplay = function(arg) {
+    // User is limited to entering numbers with 10 digits or less and only one decimal place, end the function if any digits above 10 are entered or a second decimal place is entered
     const displayContents = $('.display > span');
-    if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && e.originalEvent.keyCode === 190)) return;
+    if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && arg.originalEvent.keyCode === 190)) return;
     // remove placeholder 0
     $('.placeholder').remove();
-    // Insert a new span for each keypress with a value equal to the key which is pressed
-    $('.display').append(`<span>${e.originalEvent.key}</span>`)
 
+    // If input was a keypress insert a new span for each keypress with a value equal to the key which is pressed
+    if (arg.keyCode) {
+        $('.display').append(`<span>${arg.originalEvent.key}</span>`)
+
+    // If input was a click insert a new span with the content of the button that was clicked
+    } else {
+        $('.display').append(`<span>${arg}</span>`)
+    }
     calcApp.displayToString();
 }
 
@@ -120,7 +136,9 @@ calcApp.keyPress = function() {
         if (e.shiftKey === true && e.keyCode === 61) {
             // Add keypress styles to the plus key
             $('.key15').addClass('key-press');
+            // Update the registry with the digits in the display
             calcApp.updateOperand('registry');
+            // Clear the display
             calcApp.clearDisplay();
             calcApp.operand = "";
             calcApp.currentOperator = '+';
@@ -138,12 +156,9 @@ calcApp.keyPress = function() {
         // If escape or "c" is pressed clear the display and registry
         } else if (e.keyCode === 27 || e.keyCode === 67){
             $('.clear').addClass('key-press');
-            calcApp.clearDisplay();
-            calcApp.updateOperand('registry');
-            
-
-        // If equals is pressed
-        }else if (e.keyCode === 61) {
+            calcApp.clear();
+        // If equals or enter is pressed
+        }else if (e.keyCode === 61 || e.keyCode === 13) {
             $key.addClass('key-press');
             if (calcApp.operand === "") calcApp.updateOperand('operand');
 
@@ -157,21 +172,60 @@ calcApp.keyPress = function() {
         else {
             // If there is no div with a data-key that corresponds to the key pressed end the function
             if ($key.length === 0) return;
-            
             $key.addClass('key-press');
+            // Update the registry with the digits in the display
             calcApp.updateOperand('registry');
+            // Clear the display
             calcApp.clearDisplay();
-
             calcApp.operand = "";
-            
             // Store the current operator to whichever key was pressed so that it can be used when the equals key is pressed
-
             calcApp.currentOperator = e.key;
             
 
         }
     });
 }
+
+
+calcApp.keyClick = function () {
+    $('.key').on('click', function(e) {
+        
+        const $clickedKey = $(this).data('content');
+
+        // If the button clicked is a number between 0-9 do the following
+        if (parseInt($clickedKey) >= 0 || parseInt($clickedKey) <= 9) {
+            
+            calcApp.updateDisplay($clickedKey);
+        }
+        // If the clear button is clicked
+        else if ($clickedKey === "c") {
+
+            calcApp.clearDisplay();
+            calcApp.updateOperand('registry');
+              
+        // If equals is clicked
+        } else if ($clickedKey === "=") {
+
+            if (calcApp.operand === "") calcApp.updateOperand('operand');
+            // call the operator function that corresponds to the current operator
+            calcApp.operators[calcApp.currentOperator]();
+
+        }
+        // If the keypress is one of the operators (plus, minus, etc.) do the following
+        else {
+            
+            calcApp.updateOperand('registry');
+            calcApp.clearDisplay();
+
+            calcApp.operand = "";
+
+            // Store the current operator to whichever key was pressed so that it can be used when the equals key is pressed
+            calcApp.currentOperator = $clickedKey;   
+        }
+        
+    });
+}
+
 
 calcApp.removeTransition = function() {
     // Add an event listener to every key that waits until the "transform" transition ends and removes the "key-press" class
@@ -186,9 +240,10 @@ calcApp.removeTransition = function() {
 calcApp.init = function() {
     calcApp.keyPress();
     calcApp.removeTransition();
+    calcApp.keyClick();
 }
 
 $(function() {
     calcApp.init();
-
+    
 });

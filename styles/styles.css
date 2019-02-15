@@ -212,7 +212,11 @@ main {
   .num-pad span {
     display: block;
     text-align: center;
-    font-size: 4.0rem; }
+    font-size: 4.0rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none; }
 
 .key {
   background: #ededed;
