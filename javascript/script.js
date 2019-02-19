@@ -75,7 +75,7 @@ calcApp.displayAnswer = function() {
     }
 
     $('.display').empty();
-    $('.display').append(`<span>${calcApp.registry}</span>`);
+    $('.display').append(`<span class="answer">${calcApp.registry}</span>`);
 };
 
 
@@ -87,6 +87,7 @@ calcApp.updateDisplay = function(arg) {
         if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && arg.originalEvent.keyCode === 190)) return;
         // remove placeholder 0
         $('.placeholder').remove();
+        $('.answer').remove();
         $('.display').append(`<span>${arg.originalEvent.key}</span>`)
     // Else, If input was a click insert a new span with the content of the button that was clicked
     } else {
@@ -94,6 +95,7 @@ calcApp.updateDisplay = function(arg) {
         if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && arg === ".")) return;
         // remove placeholder 0
         $('.placeholder').remove();
+        $('.answer').remove();
         $('.display').append(`<span>${arg}</span>`)
     }
     calcApp.displayToString();
@@ -117,7 +119,7 @@ calcApp.coffeeTime = function() {
     const breakTime = moment().hours(15).minutes(34);
 
     const timeToBreak = now.to(breakTime)
-    $('.display').empty().append(`<span class="break-time">${timeToBreak}</span>`)
+    $('.display').empty().append(`<span class="break-time answer">${timeToBreak}</span>`)
 }
 
 
