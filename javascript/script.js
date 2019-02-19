@@ -1,5 +1,3 @@
-// TODO FIGURE OUT HOW TO ONLY UPDATE OPERAND ONCE THE NUMBER IS CHOSEN
-
 
 calcApp = {}
 
@@ -66,12 +64,13 @@ calcApp.clear = function() {
 
 calcApp.displayAnswer = function() {
 
-    // If the value is more than 10 digits or has more than 7 decimals use scientific notation
     const decimals = calcApp.countDecimals();
     const regLength = calcApp.registry.toString().length;
-    if (regLength > 9 && calcApp.registry >= 1) {
+    // If the number is longer than 9 digits including decimals and greater than or equal to 1 (ie. does not start with a 0) and is less than 10 integers long then round to 10 significant figures
+    if (regLength > 9 && calcApp.registry >= 1 && calcApp.registry < 999999999) {
         calcApp.registry = calcApp.registry.toPrecision(10);
-    } else if (calcApp.registry > 9999999999 || decimals >= 7) {
+    // If the value is either less than 1 and has more than 7 decimals or is greater than 10 digits long use scientific notation
+    } else if (calcApp.registry > 999999999 || decimals >= 7) {
         calcApp.registry = calcApp.registry.toExponential(4);
     }
 
@@ -81,18 +80,20 @@ calcApp.displayAnswer = function() {
 
 
 calcApp.updateDisplay = function(arg) {
-    // User is limited to entering numbers with 10 digits or less and only one decimal place, end the function if any digits above 10 are entered or a second decimal place is entered
     const displayContents = $('.display > span');
-    if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && arg.originalEvent.keyCode === 190)) return;
-    // remove placeholder 0
-    $('.placeholder').remove();
-
     // If input was a keypress insert a new span for each keypress with a value equal to the key which is pressed
     if (arg.keyCode) {
+        // User is limited to entering numbers with 10 digits or less and only one decimal place, end the function if any digits above 10 are entered or a second decimal place is entered
+        if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && arg.originalEvent.keyCode === 190)) return;
+        // remove placeholder 0
+        $('.placeholder').remove();
         $('.display').append(`<span>${arg.originalEvent.key}</span>`)
-
-    // If input was a click insert a new span with the content of the button that was clicked
+    // Else, If input was a click insert a new span with the content of the button that was clicked
     } else {
+        // User is limited to entering numbers with 10 digits or less and only one decimal place, end the function if any digits above 10 are entered or a second decimal place is entered
+        if (displayContents.length >= 10 || (calcApp.displayString.match(/\./) && arg === ".")) return;
+        // remove placeholder 0
+        $('.placeholder').remove();
         $('.display').append(`<span>${arg}</span>`)
     }
     calcApp.displayToString();
@@ -109,6 +110,14 @@ calcApp.updateOperand = function(operand) {
     // convert the ouputted string to a number
     calcApp[operand] = parseFloat(calcApp.displayString);
 
+}
+
+calcApp.coffeeTime = function() {
+    const now = moment()
+    const breakTime = moment().hours(15).minutes(34);
+
+    const timeToBreak = now.to(breakTime)
+    $('.display').empty().append(`<span class="break-time">${timeToBreak}</span>`)
 }
 
 
@@ -151,7 +160,7 @@ calcApp.keyPress = function() {
         } else if (e.shiftKey === true && e.keyCode !== 61) {
             return;
 
-        // If the keypress is a number between 0-9 do the following
+        // If the keypress is a number between 0-9 or a decimal do the following
         } else if (e.keyCode >= 48 && e.keyCode <= 57 || e.keyCode === 190) {
             // Add key-press styles to the key which was pressed
             $key.addClass('key-press');
@@ -181,10 +190,12 @@ calcApp.keyPress = function() {
             calcApp.updateOperand('registry');
             // Clear the display
             calcApp.clearDisplay();
+
+            // Store the selected operand for later and update the visual display
             calcApp.operand = "";
+            
             // Store the current operator to whichever key was pressed so that it can be used when the equals key is pressed
             calcApp.currentOperator = e.key;
-
     
             
 
@@ -199,8 +210,7 @@ calcApp.keyClick = function () {
         const $clickedKey = $(this).data('content');
 
         // If the button clicked is a number between 0-9 do the following
-        if (parseInt($clickedKey) >= 0 || parseInt($clickedKey) <= 9) {
-            
+        if (parseInt($clickedKey) >= 0 && parseInt($clickedKey) <= 9 || $clickedKey === ".") {
             calcApp.updateDisplay($clickedKey);
         }
         // If the clear button is clicked
@@ -216,8 +226,10 @@ calcApp.keyClick = function () {
             // call the operator function that corresponds to the current operator
             calcApp.operators[calcApp.currentOperator]();
 
+        }else if ($clickedKey === "coffee") {
+            calcApp.coffeeTime();
         }
-        // If the keypress is one of the operators (plus, minus, etc.) do the following
+        // If the clicked key is one of the operators (plus, minus, etc.) do the following
         else {
             
             calcApp.updateOperand('registry');

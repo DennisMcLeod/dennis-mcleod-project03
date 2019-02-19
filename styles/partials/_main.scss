@@ -3,6 +3,7 @@
     border-radius: 20px;
     background-color: #585858;
     border: 3px outset #1b1b1b;
+    position: relative;
 }
 
 .num-pad {
@@ -10,11 +11,11 @@
     display: grid;
     grid-template-rows: repeat(5, 1fr); 
     grid-template-columns: repeat(4, 1fr);
-    grid-gap: 1.5rem;
+    grid-gap: 1.6rem;
     span {
         display: block;
         text-align: center;
-        font-size: 4.0rem;
+        font-size: 3.0rem;
         user-select: none;
     }
 }
@@ -67,10 +68,32 @@
     position: relative;
 }
 
-.operand {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 1.0rem;   
-    font-size: 3.0rem; 
+.break-time {
+    font-size: 4.4rem;
 }
+
+h1 {
+    font-family: 'Amatic SC', cursive;
+    color: white;
+    font-size: 12.0rem;
+    padding: 4.0rem;
+    text-align: center;
+    @include desktop {
+        font-size: 7.5rem;
+    }
+}
+
+.title-left {
+    @include tabletWide {
+        padding: 0.5rem 0 3.0rem;
+    }
+}
+
+.title-right {
+    @include tabletWide {
+        padding: 3.0rem 0 0.5rem;
+    }
+}
+
+
+
